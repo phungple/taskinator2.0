@@ -1,6 +1,8 @@
 var formEl = document.querySelector("#task-form");
 var tasksToDoEl = document.querySelector("#tasks-to-do");
 var taskIdCounter = 0;
+var pageContentEl = document.querySelector("#page-content");
+
 //by adding the event argument to the taskFormHandler(), we can use the data and functionality that object holds.
 var taskFormHandler = function(event) {
 
@@ -52,6 +54,7 @@ var createTaskEl = function(taskDataObj) {
     // increase task counter for next unique id
     taskIdCounter++;
 };
+
 var createTaskActions = function(taskId) {
     var actionContainerEl = document.createElement("div");
     actionContainerEl.className = "task-actions";
@@ -94,7 +97,54 @@ var createTaskActions = function(taskId) {
     return actionContainerEl;
 };
 
+var taskButtonHandler = function(event) {
+    //console.log(event.target);
+    // event.target reports the element on which the event occurs, in this case, the "click" event
+    //get target element from event
+    var targetEl = event.target;
+    
+    // edit button is clicked
+    if (targetEl.matches(".edit-btn")) {
+        var taskId = targetEl.getAttribute("data-task-id");
+        editTask(taskId);
+    }
+    //delete button was clicked
+    else if (targetEl.matches(".delete-btn")) {
+        // get the element's task id
+        var taskId = event.target.getAttribute("data-task-id");
+        deleteTask(taskId);
+    }
+};
+
+var deleteTask = function(taskId) {
+    var taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "']");
+    // the code above will look for element with class="task-item" data-task-id="taskId"
+    taskSelected.remove();
+};
+
+var editTask = function(taskId) {
+    console.log("editing task #" + taskId );
+
+    //get task list item element
+    var taskSelected = document.querySelector(".task-item[data-task-id='" + taskId + "']");
+
+    //get content from task name and type
+    var taskName = taskSelected.querySelector("h3.task-name").textContent;
+    //console.log(taskName);
+    var taskType = taskSelected.querySelector("span.task-type").textContent;
+    //console.log(taskType);
+
+    // Now that we have the info we need, we can reuse the selectors from before to update the form
+    document.querySelector("input[name='task-name']").value = taskName;
+    document.querySelector("select[name='task-type']").value = taskType;
+
+    // To make it clear to the user that the form is now in "edit mode"
+    document.querySelector("#save-task").textContent = "Edit Task";
+
+    formEl.setAttribute("data-task-id", taskId);
+};
 //form-specific event "submit" will listens for 2 events within the form:
 // when click a <button> with a type attribute that has a value of "submit"
 // when press Enter on keyboard
 formEl.addEventListener("submit", taskFormHandler);
+pageContentEl.addEventListener("click", taskButtonHandler);
