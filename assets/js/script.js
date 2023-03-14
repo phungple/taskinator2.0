@@ -231,7 +231,26 @@ var taskStatusChangeHandler = function(event) {
 
 var saveTasks = function() {
     localStorage.setItem("tasks", JSON.stringify(tasks));
-}
+};
+
+// get task items from localStorage
+// convert tasks from the string format back into an array of objects
+// Iterate through a tasks array and creates task elements on the page from it
+var loadTasks = function() {
+    var savedTasks = localStorage.getItem("tasks");
+    
+    if (!savedTasks) {
+        return false;
+    }
+    console.log("Saved tasks found!");
+    savedTasks = JSON.parse(savedTasks);
+
+    //loop through savedTasks array
+    for (var i = 0; i < savedTasks.length; i++) {
+        //pass each task object into the 'createTaskEl()' function
+        createTaskEl(savedTasks[i]);
+    }
+};
 
 //form-specific event "submit" will listens for 2 events within the form:
 // when click a <button> with a type attribute that has a value of "submit"
@@ -239,3 +258,4 @@ var saveTasks = function() {
 formEl.addEventListener("submit", taskFormHandler);
 pageContentEl.addEventListener("click", taskButtonHandler);
 pageContentEl.addEventListener("change", taskStatusChangeHandler);
+loadTasks();
